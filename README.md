@@ -16,7 +16,7 @@ A meter consumption data upload spreadsheet should be prepared. If there are mul
 
 The columns can be in any order, and any additional columns will be ignored. 
 
-Meter uploads containing tens or hundreds of thousands of rows will likely take many hours to run (expect an upload of 10,000 meters or 100,000 rows of consumption data to take anywhere from 8-20 hours), therefore it is advisable to install and run this script on a server instead of a personal computer, unless you can be sure the script will be able to run for the entire length of time and there will be no issues with the computer going to sleep. 
+Uploads containing tens or hundreds of thousands of rows will likely take many hours to run (expect an upload of 10,000 meters or 100,000 rows of consumption data to take anywhere from 8-20 hours), therefore it is advisable to install and run this script on a server instead of a personal computer, unless you can be sure the script will be able to run for the entire length of time and there will be no issues with the computer going to sleep. 
 
 ## Notes
 Currently these scripts can only be used to upload meter consumption data, however, portfolioManagerServices.py contains functions that perform other calls to Portfolio Manager's webs services which can be used to expand functionality at a later date. 
@@ -55,10 +55,10 @@ Currently these scripts can only be used to upload meter consumption data, howev
 1. When prompted, browse to the location where you would like the log files to be exported. 
 1. Depending on the number of meters with consumption data to be uploaded, the script may take many hours to execute. 
     * The program will print an "upload complete" message upon reaching the end of the upload file.
-    * If the program encounters a fatal error, it will print an error message to the screen and exit. 
     * Do not exit the program or type anything in the console window until the "upload complete" message appears and the command prompt has reappeared. 
+    * If the program encounters a fatal error, it will print an error message to the screen and exit. 
 1. When the upload is complete, review the error log. If possible, correct the errors and re-upload. 
-1. If the upload is interrupted before completing (due to user interaction, connection loss, or a fatal program error), scroll to the last row of the success log and identify the last successful row, then modify the upload file by deleting all rows prior to the row matching the last successful row in the success log, and re-run the upload by starting at Step 1 above. 
+1. If the upload is interrupted before completing (due to user interaction, internet connection loss, or a fatal program error), scroll to the last row of the success log and identify the last successful row, then modify the upload file by deleting all rows prior to the row matching the last successful row in the success log, and re-run the upload by starting at Step 1 above. 
 
 Note that new error and success logs will be created each time uploadMeterConsumption.py is run. The logs contain a timestamp in the file name to identify which run they are from. 
 
