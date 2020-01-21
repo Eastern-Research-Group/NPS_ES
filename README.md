@@ -1,9 +1,23 @@
 # Energy Star Portfolio Manager API for NPS
 
 ## Description
-These scripts upload meter consumption data from an Excel spreadsheet using Portfolio Manager's web services. When run, two log files are produced: 
+These scripts upload meter consumption data from an Excel spreadsheet using Portfolio Manager's web services. 
+
+#### Project Files
+* .gitignore - Git ignore file; used for Git purposes only. 
+* README.md - Documentation about this project. 
+* portfolioManagerServices.py - Contains logging functions and functions that interact with the Portfolio Manager API.
+* settings.py - Global variables.
+* test.py - Can be run to verify a user has installed this project correctly, and also to perform a basic QA of an upload file containing meter consumption data. 
+* uploadMeterConsumption.py - Uploads meter consumption data from an Excel spreadsheet to Portfolio Manager. 
+
+When run, uploadMeterConsumption.py may produce two log files: 
 * Error log, which contains detailed information about each error. (This file will only be created if any errors occur during the upload.)
 * Success log, which documents the consumptionDataId that is created for each successful record. 
+
+If the QA procedure of test.py it run, it will produce an error log if any of the rows in the file being tested contain invalid data as described below in the Installation section.
+
+All log files will be exported to the logs folder in the local repository. 
 
 ## Preparation
 A meter consumption data upload spreadsheet should be prepared. If there are multiple worksheets in the workbook, the first one will be used for the data upload. The following column headings must exist with these exact names:
@@ -57,7 +71,7 @@ Currently these scripts can only be used to upload meter consumption data, howev
     * The program will print an "upload complete" message upon reaching the end of the upload file.
     * Do not exit the program or type anything in the console window until the "upload complete" message appears and the command prompt has reappeared. 
     * If the program encounters a fatal error, it will print an error message to the screen and exit. 
-1. When the upload is complete, review the error log. If possible, correct the errors and re-upload. 
+1. When the upload is complete, review the error log. If possible, correct the errors and re-upload. If desired, you can correct errors directly in the error log and re-upload it.
 1. If the upload is interrupted before completing (due to user interaction, internet connection loss, or a fatal program error), scroll to the last row of the success log and identify the last successful row, then modify the upload file by deleting all rows prior to the row matching the last successful row in the success log, and re-run the upload by starting at Step 1 above. 
 
 Note that new error and success logs will be created each time uploadMeterConsumption.py is run. The logs contain a timestamp in the file name to identify which run they are from. 

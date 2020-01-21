@@ -6,6 +6,7 @@ import datetime
 import os
 import html
 import sys
+from openpyxl import Workbook, load_workbook
 
 validUnits = ['ccf (hundred cubic feet)','cf (cubic feet)','cGal (hundred gallons) (UK)','cGal (hundred gallons) (US)','Cubic Meters per Day','cm (Cubic meters)','Cords','Gallons (UK)','Gallons (US)','GJ','kBtu (thousand Btu)','kcf (thousand cubic feet)','Kcm (Thousand Cubic meters)','KGal (thousand gallons) (UK)','KGal (thousand gallons) (US)','Kilogram','KLbs. (thousand pounds)','kWh (thousand Watt-hours)','Liters','MBtu (million Btu)','MCF(million cubic feet)','mg/l (milligrams per liter)','MGal (million gallons) (UK)','MGal (million gallons) (US)','Million Gallons per Day','MLbs. (million pounds)','MWh (million Watt-hours)','pounds','Pounds per year','therms','ton hours','Tonnes (metric)','tons']
 
@@ -33,6 +34,20 @@ def writeCsv(path, headings, data):
         writer.writerow(data)
     csvfile.close()
 
+def writeExcel(path, headings, data):
+    if not os.path.isfile(path): 
+        wb = Workbook()
+        sheet = wb.active
+        for col, val in enumerate(headings, start=1):
+            sheet.cell(row=1, column=col).value = val
+        wb.save(filename = path)
+    wb = load_workbook(filename = path)
+    sheet = wb.active
+    row = sheet.max_row + 1
+    for col, val in enumerate(data, start=1):
+        sheet.cell(row=row, column=col).value = val
+    wb.save(filename = path)
+        
 ################################################################################
 
 def checkPath(path):
@@ -54,7 +69,7 @@ def checkPassword(accountId, password):
     url = s.urlRoot + 'account/'
     response = requests.get(url, auth=s.auth_values)
     if not response.ok:
-        sys.exit('Incorrect password; please try again.')
+        sys.exit('Incorrect password')
 
 ################################################################################
 
@@ -70,14 +85,14 @@ def getPropertiesFromAccount(accountId, outfile=None, errorfile=None):
                 if outfile:
                     headings = ['PropertyId', 'PropertyName']
                     data = [link.get('id'), link.get('hint')]
-                    writeCsv(outfile, headings, data)
+                    writeExcel(outfile, headings, data)
         return propertyDict
     else:
         print(accountId + ': ' + str(response))
         if errorPath:
             errorheadings = ['Timestamp','AccountId','ErrorMessage']
             error = [str(datetime.datetime.now()), accountId, extractErrorMsg(str(response))]
-            writeCsv(errorfile, errorheadings, error)
+            writeExcel(errorfile, errorheadings, error)
 
 def deleteProperty(propertyId, outfile=None, errorfile=None):
     url = s.urlRoot + 'property/' + str(propertyId)
@@ -86,11 +101,11 @@ def deleteProperty(propertyId, outfile=None, errorfile=None):
     if response.ok:
         headings = ['PropertyId','Message']
         print('Property ID ' + str(propertyId) + ' deleted')
-        writeCsv(outfile, headings, [propertyId, 'deleted'])
+        writeExcel(outfile, headings, [propertyId, 'deleted'])
     else:
         errorheadings = ['Timestamp', 'PropertyId', 'ErrorMessage']
         error = [str(datetime.datetime.now()), str(propertyId), extractErrorMsg(str(response.text))]
-        writeCsv(errorfile, errorheadings, error)
+        writeExcel(errorfile, errorheadings, error)
 ################################################################################
 
 def getMetersFromProperty(propertyId, outfile=None, errorfile=None):
@@ -105,14 +120,14 @@ def getMetersFromProperty(propertyId, outfile=None, errorfile=None):
                 if outfile:
                     headings = ['PropertyId', 'MeterId', 'MeterName']
                     data = [propertyId, link.get('id'), link.get('hint')]
-                    writeCsv(outfile, headings, data)
+                    writeExcel(outfile, headings, data)
         return meterDict
     else:
         print(str(propertyId) + ': ' + str(response))
         if errorfile:
             errorheadings = ['Timestamp','PropertyId','ErrorMessage']
             error = [str(datetime.datetime.now()), str(propertyId), extractErrorMsg(str(response))]
-            writeCsv(errorfile, errorheadings, error)
+            writeExcel(errorfile, errorheadings, error)
 
 def getMeter(meterId, outfile=None, errorfile=None, propertyId=None):
     url = s.urlRoot + 'meter/' + str(meterId)
@@ -137,14 +152,14 @@ def getMeter(meterId, outfile=None, errorfile=None, propertyId=None):
                 data.append(propertyId)
             headings.extend(['MeterId', 'MeterName', 'MeterType', 'Unit', 'FirstBillDate', 'InUse'])
             data.extend(meterDict.values())
-            writeCsv(outfile, headings, data)
+            writeExcel(outfile, headings, data)
         return meterDict
     else:
         print(str(meterId) + ': ' + str(response))
         if errorfile:
             errorheadings = ['Timestamp','MeterId','ErrorMessage']
             error = [str(datetime.datetime.now()), str(meterId), extractErrorMsg(str(response))]
-            writeCsv(errorfile, errorheadings, error)
+            writeExcel(errorfile, errorheadings, error)
 
 def deleteMeter(meterId):
     url = s.urlRoot + 'meter/' + str(meterId)
@@ -178,11 +193,11 @@ def postMeterConsumptionData(meterId, xml, outfile, errorfile, errordata):
             for child2 in child:
                 data.append(child2.text)
         print(data)
-        writeCsv(outfile, headings, data)
+        writeExcel(outfile, headings, data)
     else:
         errorheadings = ['Timestamp', 'PropertyId', 'MeterId', 'MeterName', 'Cost', 'StartDate', 'EndDate', 'Usage', 'ErrorMessage']
         errordata.append(extractErrorMsg(str(response.text)))
-        writeCsv(errorfile, errorheadings, errordata)
+        writeExcel(errorfile, errorheadings, errordata)
         
 
 def deleteMeterConsumption(consumptionDataId, outfile=None, errorfile=None):
@@ -193,13 +208,13 @@ def deleteMeterConsumption(consumptionDataId, outfile=None, errorfile=None):
         print('Consumption Data ID ' + str(consumptionDataId) + ' deleted')
         if outfile:
             headings = ['ConsumptionDataId','Message']
-            writeCsv(outfile, headings, [consumptionDataId, 'deleted'])
+            writeExcel(outfile, headings, [consumptionDataId, 'deleted'])
     else:
         print(str(consumptionDataId) + ' ' + response.text)
         if errorfile:
             errorheadings = ['Timestamp', 'ConsumptionDataId', 'ErrorMessage']
             error = [str(datetime.datetime.now()), str(consumptionDataId), extractErrorMsg(str(response.text))]
-            writeCsv(errorfile, errorheadings, error)
+            writeExcel(errorfile, errorheadings, error)
 
 def deleteAllConsumptionData(meterId, outfile=None, errorfile=None):
     url = s.urlRoot + 'meter/' + str(meterId) + '/consumptionData'
@@ -209,10 +224,10 @@ def deleteAllConsumptionData(meterId, outfile=None, errorfile=None):
         print('All consumption data for meter ID ' + str(meterId) + ' deleted')
         if outfile:
             headings = ['MeterId','Message']
-            writeCsv(outfile, headings, [meterId, 'All consumption data deleted'])
+            writeExcel(outfile, headings, [meterId, 'All consumption data deleted'])
     else:
         print(str(meterId) + ' ' + response.text)
         if errorfile:
             errorheadings = ['Timestamp', 'MeterId', 'ErrorMessage']
             error = [str(datetime.datetime.now()), str(meterId), extractErrorMsg(str(response.text))]
-            writeCsv(errorfile, errorheadings, error)
+            writeExcel(errorfile, errorheadings, error)

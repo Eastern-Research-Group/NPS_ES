@@ -1,4 +1,6 @@
 import sys
+import os
+import warnings
 import settings as s
 import pandas as pd
 import portfolioManagerServices as pm
@@ -10,9 +12,7 @@ pm.checkPassword(s.accountId, s.passwd)
 print('Account access verified.')
 
 uploadfile = s.getUploadFilePath()    
-
-logpath = s.getLogFilePath()
-errorfile = logpath + s.today + '_consumptionData_error.csv'
+errorfile = s.logpath + s.today + '_consumptionData_error.xlsx'
 
 print('Upload file is ' + uploadfile)
 print('Log directory is ' + logpath)
@@ -31,6 +31,9 @@ def getErrorMessage(row):
     return errormsg;
     
 print('\nPerforming basic QA of upload file. This may take a few minutes...')
+# turn off numpy FutureWarning
+warnings.simplefilter(action='ignore', category=FutureWarning)
+
 # upload the file to a dataframe, exit if file can't be read
 try:
     df = pd.read_excel(uploadfile)
@@ -40,7 +43,7 @@ except:
 pd.options.mode.chained_assignment = None 
     
 # remove columns we don't need
-df = df[['(03) ESPM Property Id','(02) Property Name','(16) Portfolio Manager Meter ID','(04) Meter Name','(05) Start Date','(06) End Date','Final Consumption to Upload','Final Cost to Upload','Energy Type']]
+# df = df[['(03) ESPM Property Id','(02) Property Name','(16) Portfolio Manager Meter ID','(04) Meter Name','(05) Start Date','(06) End Date','Final Consumption to Upload','Final Cost to Upload','Energy Type']]
 
 # find rows where MeterId = *, or MeterId, StartDate, EndDate, Usage, or Cost is null
 mask = (df['(16) Portfolio Manager Meter ID']=='*') | df['(16) Portfolio Manager Meter ID'].isnull() | df['(05) Start Date'].isnull() | df['(06) End Date'].isnull() | df['Final Consumption to Upload'].isnull() | df['Final Cost to Upload'].isnull()
@@ -50,7 +53,7 @@ if len(gk) > 0:
     
     gk['Error Message'] = gk.apply(getErrorMessage, axis=1)
     #  print bad rows to error logs
-    gk.to_csv(errorfile, index=False)
+    gk.to_excel(errorfile, index=False)
     # drop bad rows from dataframe
     df. drop(gk. index, axis=0, inplace=True)
 
