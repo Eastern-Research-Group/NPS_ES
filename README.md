@@ -44,7 +44,6 @@ Currently these scripts can only be used to upload meter consumption data, howev
     ```
     pip install requests
     pip install pandas
-    pip install tkinter
     ```
 1. OPTIONAL: To run a test that the program is working, and perform an optional basic QA of the upload file, navigate to the root of the local repository and execute the following: 
     ```
