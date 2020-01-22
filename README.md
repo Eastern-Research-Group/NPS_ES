@@ -6,6 +6,7 @@ These scripts upload meter consumption data from an Excel spreadsheet using Port
 #### Project Files
 * .gitignore - Git ignore file; used for Git purposes only. 
 * README.md - Documentation about this project. 
+* deleteMeters.py - Deletes a hard-coded list of meter IDs. This module can be updated later to accept a spreadsheet of meters to delete. This module does not need to be included when creating a code package for the client but was committed to git for later ERG use. 
 * portfolioManagerServices.py - Contains logging functions and functions that interact with the Portfolio Manager API, which can be called by other scripts such as uploadMeterConsumption.py.
 * settings.py - Global variables.
 * test.py - Can be run to verify a user has installed this project correctly, and also to perform a basic QA of an upload file containing meter consumption data. 
@@ -38,11 +39,12 @@ Currently these scripts can only be used to upload meter consumption data, howev
 ## Installation
 1. At the command prompt or in Windows Powershell, navigate to the location in which you'd like to install this program. 
 1. Clone this repository by issuing this command: ```git clone https://github.com/Eastern-Research-Group/NPS_ES```
-1. If necessary, install [python](https://www.python.org/downloads/)
+1. If necessary, install [python](https://www.python.org/downloads/). Note: this project expects Python 3. 
 1. Install the dependencies:
     ```
     pip install requests
     pip install pandas
+    pip install tkinter
     ```
 1. OPTIONAL: To run a test that the program is working, and perform an optional basic QA of the upload file, navigate to the root of the local repository and execute the following: 
     ```

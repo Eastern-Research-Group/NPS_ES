@@ -12,12 +12,12 @@ validUnits = ['ccf (hundred cubic feet)','cf (cubic feet)','cGal (hundred gallon
 
 meterTypeDict = {'Gallons (US)': 'Propane', 'kWh (thousand Watt-hours)': 'Electric', 'KGal (thousand gallons) (US)': 'Municipally Supplied Potable Water - Indoor','kcf (thousand cubic feet)': 'Natural Gas','MBtu (million Btu)':'District Steam'}
 
-def extractErrorMsg(errorMessage):
+def extractErrorMsg(errorMessage):    
     errormsg = ''
     root = et.fromstring(errorMessage)
     for errors in root.findall('errors'):
         for error in errors:
-            errormsg = errormsg + error.get('errorDescription')
+            errormsg = errormsg + error.get('errorDescription') + '; '
     errormsg = errormsg[:-2]
     return errormsg
 
@@ -91,7 +91,7 @@ def getPropertiesFromAccount(accountId, outfile=None, errorfile=None):
         print(accountId + ': ' + str(response))
         if errorPath:
             errorheadings = ['Timestamp','AccountId','ErrorMessage']
-            error = [str(datetime.datetime.now()), accountId, extractErrorMsg(str(response))]
+            error = [str(datetime.datetime.now()), accountId, extractErrorMsg(response.content)]
             writeExcel(errorfile, errorheadings, error)
 
 def deleteProperty(propertyId, outfile=None, errorfile=None):
@@ -104,7 +104,7 @@ def deleteProperty(propertyId, outfile=None, errorfile=None):
         writeExcel(outfile, headings, [propertyId, 'deleted'])
     else:
         errorheadings = ['Timestamp', 'PropertyId', 'ErrorMessage']
-        error = [str(datetime.datetime.now()), str(propertyId), extractErrorMsg(str(response.text))]
+        error = [str(datetime.datetime.now()), str(propertyId), extractErrorMsg(response.content)]
         writeExcel(errorfile, errorheadings, error)
 ################################################################################
 
@@ -126,7 +126,7 @@ def getMetersFromProperty(propertyId, outfile=None, errorfile=None):
         print(str(propertyId) + ': ' + str(response))
         if errorfile:
             errorheadings = ['Timestamp','PropertyId','ErrorMessage']
-            error = [str(datetime.datetime.now()), str(propertyId), extractErrorMsg(str(response))]
+            error = [str(datetime.datetime.now()), str(propertyId), extractErrorMsg(response.content)]
             writeExcel(errorfile, errorheadings, error)
 
 def getMeter(meterId, outfile=None, errorfile=None, propertyId=None):
@@ -158,13 +158,21 @@ def getMeter(meterId, outfile=None, errorfile=None, propertyId=None):
         print(str(meterId) + ': ' + str(response))
         if errorfile:
             errorheadings = ['Timestamp','MeterId','ErrorMessage']
-            error = [str(datetime.datetime.now()), str(meterId), extractErrorMsg(str(response))]
+            error = [str(datetime.datetime.now()), str(meterId), extractErrorMsg(response.content)]
             writeExcel(errorfile, errorheadings, error)
 
-def deleteMeter(meterId):
+def deleteMeter(meterId, errorfile=None):
     url = s.urlRoot + 'meter/' + str(meterId)
     response = requests.delete(url, auth=s.auth_values)
-
+    if response.ok:
+        print('Meter ID ' + str(meterId) + ' deleted.')
+    else:
+        print(str(meterId) + ': ' + extractErrorMsg(response.content))
+        if errorfile:
+            errorheadings = ['Timestamp','MeterId','ErrorMessage']
+            error = [str(datetime.datetime.now()), str(meterId), extractErrorMsg(response.content)]
+            writeExcel(errorfile, errorheadings, error)    
+            
 ################################################################################
 
 def getMeterConsumptionDataXml(cost, startDate, endDate, usage):
@@ -195,8 +203,9 @@ def postMeterConsumptionData(meterId, xml, outfile, errorfile, errordata):
         print(data)
         writeExcel(outfile, headings, data)
     else:
+        print(data + extractErrorMsg(response.content))
         errorheadings = ['Timestamp', 'PropertyId', 'MeterId', 'MeterName', 'Cost', 'StartDate', 'EndDate', 'Usage', 'ErrorMessage']
-        errordata.append(extractErrorMsg(str(response.text)))
+        errordata.append(extractErrorMsg(response.content))
         writeExcel(errorfile, errorheadings, errordata)
         
 
@@ -210,10 +219,10 @@ def deleteMeterConsumption(consumptionDataId, outfile=None, errorfile=None):
             headings = ['ConsumptionDataId','Message']
             writeExcel(outfile, headings, [consumptionDataId, 'deleted'])
     else:
-        print(str(consumptionDataId) + ' ' + response.text)
+        print(str(consumptionDataId) + ' ' + extractErrorMsg(response.content))
         if errorfile:
             errorheadings = ['Timestamp', 'ConsumptionDataId', 'ErrorMessage']
-            error = [str(datetime.datetime.now()), str(consumptionDataId), extractErrorMsg(str(response.text))]
+            error = [str(datetime.datetime.now()), str(consumptionDataId), extractErrorMsg(response.content)]
             writeExcel(errorfile, errorheadings, error)
 
 def deleteAllConsumptionData(meterId, outfile=None, errorfile=None):
@@ -226,8 +235,8 @@ def deleteAllConsumptionData(meterId, outfile=None, errorfile=None):
             headings = ['MeterId','Message']
             writeExcel(outfile, headings, [meterId, 'All consumption data deleted'])
     else:
-        print(str(meterId) + ' ' + response.text)
+        print(str(meterId) + ' ' + extractErrorMsg(response.content))
         if errorfile:
             errorheadings = ['Timestamp', 'MeterId', 'ErrorMessage']
-            error = [str(datetime.datetime.now()), str(meterId), extractErrorMsg(str(response.text))]
+            error = [str(datetime.datetime.now()), str(meterId), extractErrorMsg(response.content)]
             writeExcel(errorfile, errorheadings, error)

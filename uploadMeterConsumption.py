@@ -13,8 +13,8 @@ print('Password accepted.')
 
 uploadfile = s.getUploadFilePath()    
 
-outfile = s.logpath +  s.today + '_consumptionData.csv'
-errorfile = s.logpath + s.today + '_consumptionData_error.csv'
+outfile = s.logpath +  s.today + '_consumptionData.xlsx'
+errorfile = s.logpath + s.today + '_consumptionData_error.xlsx'
 
 print('\nGathering information...')
 
