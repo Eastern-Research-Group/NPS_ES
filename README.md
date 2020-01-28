@@ -1,11 +1,12 @@
 # Energy Star Portfolio Manager API for NPS
 
 ## Description
-These scripts upload meter consumption data from an Excel spreadsheet using Portfolio Manager's web services. 
+This is a Python application that can be used to upload meter consumption data from an Excel spreadsheet using Portfolio Manager's web services using command-line scripts. You will need to have Python 3 installed in order to use this application.
 
 #### Project Files
 * .gitignore - Git ignore file; used for Git purposes only. 
 * README.md - Documentation about this project. 
+* README.doc - MS Word version of README.md to be included in client deliverable. 
 * deleteMeters.py - Deletes a hard-coded list of meter IDs. This module can be updated later to accept a spreadsheet of meters to delete. This module does not need to be included when creating a code package for the client but was committed to git for later ERG use. 
 * portfolioManagerServices.py - Contains logging functions and functions that interact with the Portfolio Manager API, which can be called by other scripts such as uploadMeterConsumption.py.
 * settings.py - Global variables.
