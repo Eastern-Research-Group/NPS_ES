@@ -6,7 +6,7 @@ This is a Python application that can be used to upload meter consumption data f
 #### Project Files
 * .gitignore - Git ignore file; used for Git purposes only. 
 * README.md - Documentation about this project. 
-* README.doc - MS Word version of README.md to be included in client deliverable. 
+* README.docx - MS Word version of README.md to be included in client deliverable. 
 * deleteMeters.py - Deletes a hard-coded list of meter IDs. This module can be updated later to accept a spreadsheet of meters to delete. This module does not need to be included when creating a code package for the client but was committed to git for later ERG use. 
 * portfolioManagerServices.py - Contains logging functions and functions that interact with the Portfolio Manager API, which can be called by other scripts such as uploadMeterConsumption.py.
 * settings.py - Global variables.
@@ -32,7 +32,7 @@ A meter consumption data upload spreadsheet should be prepared. If there are mul
 
 The columns can be in any order, and any additional columns will be ignored. 
 
-Uploads containing tens or hundreds of thousands of rows will likely take many hours to run (expect an upload of 10,000 meters or 100,000 rows of consumption data to take anywhere from 8-20 hours), therefore it is advisable to install and run this script on a server instead of a personal computer, unless you can be sure the script will be able to run for the entire length of time and there will be no issues with the computer going to sleep. 
+Uploads containing tens or hundreds of thousands of rows will likely take many hours to run (expect an upload of 10,000 meters or 100,000 rows of consumption data to take anywhere from 8-20 hours), therefore it is advisable to install and run this application on a server instead of a personal computer, unless you can be sure the script will be able to run for the entire length of time and there will be no issues with the computer going to sleep. 
 
 ## Notes
 Currently these scripts can only be used to upload meter consumption data, however, portfolioManagerServices.py contains functions that perform other calls to Portfolio Manager's web services which can be used to expand functionality at a later date. 
